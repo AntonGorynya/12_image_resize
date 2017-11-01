@@ -1,11 +1,12 @@
 from PIL import Image
 import argparse
-import os
 
 
-def get_dir(input_image):
-    pic_dir = os.path.dirname(input_image)
-    return pic_dir
+def create_pic_name(input_image_name, width, hight):
+    pic_name = input_image_name[:args.path.rfind('.')] + \
+               '__{}x{}'.format(width, hight) + \
+               input_image_name[args.path.rfind('.'):]
+    return pic_name
 
 
 def resize_image(path_to_original, out_img,
@@ -15,24 +16,27 @@ def resize_image(path_to_original, out_img,
         if img.size[0]/target_width != img.size[1]/target_hight:
             print('warning! Scale mismatch. x_scale {}, y_scale {}'
                   .format(img.size[0]/target_width, img.size[1]/target_hight))
-        img = img.resize((target_width, target_hight), Image.ANTIALIAS)
+        width = target_width
+        hight = target_width
         target_hight = 0
         target_width = 0
     elif target_sacle and not (target_hight or target_width):
         width = int((float(img.size[0]) * float(target_sacle)))
         hight = int((float(img.size[1]) * float(target_sacle)))
-        img = img.resize((width, hight), Image.ANTIALIAS)
     elif target_hight:
         scale = (target_hight / float(img.size[1]))
         width = int((float(img.size[0]) * float(scale)))
-        img = img.resize((width, target_hight), Image.ANTIALIAS)
+        hight = target_hight
     elif target_width:
         scale = (target_width / float(img.size[0]))
         hight = int((float(img.size[1]) * float(scale)))
-        img = img.resize((target_width, hight), Image.ANTIALIAS)
+        width = target_width
     else:
         print("wrong paramters")
-    img.save('{}/{}'.format(get_dir(path_to_original), out_img))
+    img = img.resize((width, hight), Image.ANTIALIAS)
+    if not out_img:
+        out_img = create_pic_name(path_to_original, width, hight)
+    img.save(out_img)
 
 
 def create_parser():
@@ -50,6 +54,4 @@ def create_parser():
 if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
-    if not args.output:
-        args.output = 'Sompic'+args.path[args.path.rfind('.'):]
     resize_image(args.path, args.output, args.width, args.hight, args.scale)
