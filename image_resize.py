@@ -1,8 +1,14 @@
 from PIL import Image
 import argparse
+import os
 
 
-def resize_image(path_to_original, path_to_result,
+def get_dir(input_image):
+    pic_dir = os.path.dirname(input_image)
+    return pic_dir
+
+
+def resize_image(path_to_original, out_img,
                  target_width=None, target_hight=None, target_sacle=None):
     img = Image.open(path_to_original)
     if target_hight and target_width:
@@ -26,17 +32,17 @@ def resize_image(path_to_original, path_to_result,
         img = img.resize((target_width, hight), Image.ANTIALIAS)
     else:
         print("wrong paramters")
-    img.save(path_to_result)
+    img.save('{}/{}'.format(get_dir(path_to_original), out_img))
 
 
 def create_parser():
     parser = argparse.ArgumentParser(description='resize image')
-    parser.add_argument("path", help="path to checking folder")
+    parser.add_argument("path", help="path to image")
     parser.add_argument("-width", type=int, help="input width")
     parser.add_argument("-hight", type=int, help="input hight")
     parser.add_argument("-scale", type=float, help="input hight")
     parser.add_argument("-output",
-                        default='sompic.jpg',
+                        default='',
                         type=str, help="path to output file")
     return parser
 
@@ -44,4 +50,6 @@ def create_parser():
 if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
+    if not args.output:
+        args.output = 'Sompic'+args.path[args.path.rfind('.'):]
     resize_image(args.path, args.output, args.width, args.hight, args.scale)
