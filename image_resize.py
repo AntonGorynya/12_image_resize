@@ -9,30 +9,41 @@ def create_pic_name(input_image_name, width, hight):
     return pic_name
 
 
+def set_size(original_width, original_hight,
+             target_width=None, target_hight=None, target_sacle=None):
+    if target_hight and target_width:
+        if original_width/target_width != original_hight/target_hight:
+            print('warning! Scale mismatch. x_scale {}, y_scale {}'
+                  .format(original_width/target_width,
+                          original_hight/target_hight))
+        width = target_width
+        hight = target_width
+        return width, hight
+    elif target_sacle and not (target_hight or target_width):
+        width = int((float(original_width) * float(target_sacle)))
+        hight = int((float(original_hight) * float(target_sacle)))
+        return width, hight
+    elif target_hight:
+        scale = (target_hight / float(original_hight))
+        width = int((float(original_width) * float(scale)))
+        hight = target_hight
+        return width, hight
+    elif target_width:
+        scale = (target_width / float(original_width))
+        hight = int((float(original_hight) * float(scale)))
+        width = target_width
+        return width, hight
+    else:
+        print("wrong paramters")
+
+
 def resize_image(path_to_original, out_img,
                  target_width=None, target_hight=None, target_sacle=None):
     img = Image.open(path_to_original)
-    if target_hight and target_width:
-        if img.size[0]/target_width != img.size[1]/target_hight:
-            print('warning! Scale mismatch. x_scale {}, y_scale {}'
-                  .format(img.size[0]/target_width, img.size[1]/target_hight))
-        width = target_width
-        hight = target_width
-        target_hight = 0
-        target_width = 0
-    elif target_sacle and not (target_hight or target_width):
-        width = int((float(img.size[0]) * float(target_sacle)))
-        hight = int((float(img.size[1]) * float(target_sacle)))
-    elif target_hight:
-        scale = (target_hight / float(img.size[1]))
-        width = int((float(img.size[0]) * float(scale)))
-        hight = target_hight
-    elif target_width:
-        scale = (target_width / float(img.size[0]))
-        hight = int((float(img.size[1]) * float(scale)))
-        width = target_width
-    else:
-        print("wrong paramters")
+    original_width = img.size[0]
+    original_hight = img.size[1]
+    width, hight = set_size(original_width, original_hight,
+                            target_width, target_hight, target_sacle)
     img = img.resize((width, hight), Image.ANTIALIAS)
     if not out_img:
         out_img = create_pic_name(path_to_original, width, hight)
