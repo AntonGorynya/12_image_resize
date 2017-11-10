@@ -68,8 +68,7 @@ def resize_image(path_to_original, out_dir=None,
         if not out_dir:
             out_img = out_img_name
         else:
-            out_img = os.path.join(out_dir, out_img_name)
-        print(out_img)
+            out_img = os.path.join(out_dir, out_img_name)        
         img.save(out_img)
     except TypeError:
         logging.info('image don\'t created')
