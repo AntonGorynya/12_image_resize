@@ -31,7 +31,8 @@ def set_size(original_width, original_hight,
         x_scale = original_width/target_width
         y_scale = original_hight/target_hight
         rel_tol = 1e-09
-        if abs(x_scale-y_scale) > max(rel_tol*max(x_scale, y_scale), 0.0):
+        abs_tol = 0.0
+        if abs(x_scale-y_scale) > max(rel_tol*max(x_scale, y_scale), abs_tol):
             logging.info('\nwarning! Scale mismatch. x_scale {}, y_scale {}'
                          .format(x_scale, y_scale))
         width = target_width
