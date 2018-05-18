@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 import argparse
 import logging
 import os
@@ -74,6 +74,21 @@ def resize_image(path_to_original, out_dir=None,
         logging.info('image don\'t created')
 
 
+def add_border(path_to_original, border_width, out_dir=None):
+    logging.info('processing {}'.format(path_to_original))
+    original_img = Image.open(path_to_original)
+    original_width, original_hight = original_img.size
+    out_width = original_width + border_width*2
+    out_hight = original_hight + border_width*2
+    out_img = Image.new('RGBA', [out_width, out_hight], (255, 255, 255, 0))
+    out_img.paste(original_img, (border_width, border_width))
+    # write to stdout
+    out_img_name = path_to_original
+    if out_dir:
+        out_img_name = os.path.join(out_dir, out_img_name)
+    out_img.save(out_img_name)
+
+
 def create_parser():
     parser = argparse.ArgumentParser(description='resize image')
     parser.add_argument('path', help='path to image')
@@ -81,6 +96,7 @@ def create_parser():
     parser.add_argument('-hight', type=int, help='input hight')
     parser.add_argument('-scale', type=float, help='input hight')
     parser.add_argument('--verbose', '-v', type=int, default=0)
+    parser.add_argument('-board', '-b', type=int, default=0)
     parser.add_argument('-output',
                         default='',
                         type=str, help='path to output dir')
@@ -93,3 +109,5 @@ if __name__ == '__main__':
     logging_level = VERBOSITY_TO_LOGGING_LEVELS[args.verbose]
     logging.basicConfig(level=logging_level)
     resize_image(args.path, args.output, args.width, args.hight, args.scale)
+    if args.board:
+        add_border(args.path, args.board)

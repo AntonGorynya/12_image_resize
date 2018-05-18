@@ -1,6 +1,7 @@
 # Image Resizer
 
-This script resize input image.
+This script resize input image or add extra border to exists image
+
 
 # How to Install
 
